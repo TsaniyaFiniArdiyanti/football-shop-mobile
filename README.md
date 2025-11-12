@@ -55,3 +55,55 @@ Dalam metode build(BuildContext context), parameter context diberikan secara oto
 ### Jelaskan konsep "hot reload" di Flutter dan bagaimana bedanya dengan "hot restart".
 Hot reload adalah proses memuat ulang kode yang diubah tanpa kehilangan state aplikasi yang sedang berjalan. Hot restart adalah proses menjalankan ulang aplikasi dari awal dengan kode yang diperbarui. Cara kerja hot reload adalah hanya kode yang diubah yang dikompilasi ulang, widget tree dibangun ulang, tetapi state dipertahankan, dan proses sangat cepat. Sementara hot restart aplikasi dihentikan sepenuhnya, kode dikompilasi ulang dari awal, semua state direset ke kondisi awal, dan lebih lambat dari hot reload.
 </details>
+
+<details>
+<summary>Tugas 8: Flutter Navigation, Layouts, Forms, and Input Elements</summary>
+
+### Jelaskan perbedaan antara `Navigator.push()` dan `Navigator.pushReplacement()` pada Flutter. Dalam kasus apa sebaiknya masing-masing digunakan pada aplikasi Football Shop kamu?
+1. **`Navigator.push()`** berfungsi untuk menambahkan halaman baru ke atas tumpukan halaman (stack) tanpa menghapus halaman sebelumnya. Halaman lama masih tersimpan di bawahnya, sehingga pengguna bisa kembali ke halaman sebelumnya menggunakan tombol back.
+   - **Contoh kasus:**
+     Dari menu utama ke halaman form, pengguna menekan tombol "Create Product" di `menu.dart`. Setelah selesai atau tidak jadi mengisi form, pengguna harus bisa menekan tombol back untuk kembali ke menu utama.
+
+2. **`Navigator.pushReplacement()`** berfungsi untuk membuka halaman baru, tetapi dengan mengganti halaman saat ini di tumpukan. Halaman lama dihapus dari stack, sehingga pengguna tidak bisa kembali ke halaman sebelumnya dengan tombol back.
+   - **Contoh kasus:**
+     Setelah menyelesaikan aksi, Pengguna selesai mengisi form "Add Product" dan menekan "Save". Aplikasi menyimpan data lalu membawanya ke halaman "My Products". Jika pengguna menekan back dari halaman "My Products", pengguna tidak akan kembali ke form (yang datanya sudah disubmit), melainkan kembali ke Menu Utama. Ini mencegah double-submit atau kebingungan.
+
+### Bagaimana kamu memanfaatkan hierarchy widget seperti `Scaffold`, `AppBar`, dan `Drawer` untuk membangun struktur halaman yang konsisten di seluruh aplikasi?
+Hierarki Scaffold, AppBar, dan Drawer dimanfaatkan untuk menciptakan konsistensi dengan menjadikan Scaffold sebagai kerangka dasar untuk setiap halaman. Scaffold menyediakan tempat standar, yaitu appBar untuk bagian atas dan drawer untuk menu navigasi samping. Kunci konsistensi adalah reusability, elemen yang identik di semua halaman (seperti menu di Drawer) dibuat menjadi satu widget terpisah (LeftDrawer) dan dipanggil setiap halaman. Sementara itu, elemen yang strukturnya sama tapi kontennya beda (seperti AppBar yang judulnya berganti) tetap digunakan di setiap halaman untuk menjaga keseragaman visual. Dengan cara ini, saya mendapatkan struktur yang sesuai dan tampilan yang seragam di seluruh aplikasi dengan usaha minimal.
+
+### Dalam konteks desain antarmuka, apa kelebihan menggunakan layout widget seperti `Padding`, `SingleChildScrollView`, dan `ListView` saat menampilkan elemen-elemen form? Berikan contoh penggunaannya dari aplikasi kamu.
+
+1. Padding
+    
+    **Kelebihan dalam sebuah form:**
+    - Membuat UI terlihat jauh lebih rapi, profesional, dan tidak sesak
+    - Memperjelas batas antar elemen input
+    - Membantu menciptakan hierarki visual yang lebih enak dipandang
+
+    **Contoh Penggunaan di Aplikasi:**
+    Membuat hampir setiap elemen input (seperti TextFormField dan DropdownButtonFormField) di dalam widget Padding untuk memberi jarak 8.0 piksel di sekelilingnya.
+
+2. SingleChildScrollView
+    
+    **Kelebihan dalam sebuah form:**
+    - Menangani overflow ketika konten melebihi layar
+    - Cocok untuk form dengan jumlah field variabel
+    - Memungkinkan scrolling smooth tanpa batasan layout yang kaku
+
+    **Contoh Penggunaan di Aplikasi:**
+    Membuat seluruh Form (yang berisi Column dari semua field) dengan SingleChildScrollView untuk memastikan halaman form bisa di-scroll.
+
+3. ListView
+    
+    **Kelebihan dalam sebuah form:**
+    - Render hanya elemen yang terlihat di viewport (performance optimal)
+    - Built-in scrolling behavior
+    - Cocok untuk list data produk atau kategori
+
+    **Contoh Penggunaan di Aplikasi:**
+    Digunakan di file `left_drawer.dart`. Seluruh navigasi ditempatkan sebagai children dari sebuah ListView. Ini memastikan bahwa jika menu di drawer suatu saat menjadi sangat banyak, menu tersebut dapat di-scroll oleh pengguna.
+
+### Bagaimana kamu menyesuaikan warna tema agar aplikasi Football Shop memiliki identitas visual yang konsisten dengan brand toko?
+Untuk menyesuaikan warna tema agar aplikasi Football Shop memiliki identitas visual yang konsisten, caranya dengan mendefinisikan skema warna secara terpusat di satu lokasi, yaitu di dalam properti theme pada widget MaterialApp di file main.dart. Dengan menggunakan ColorScheme.fromSeed(), saya hanya perlu menentukan satu seedColor yang merepresentasikan warna brand, dan Flutter akan secara otomatis menghasilkan seluruh palet warna (seperti primary, secondary, dan background) yang harmonis. Setelah tema global ini ditetapkan, semua widget di seluruh aplikasi, seperti AppBar dan ElevatedButton, akan secara otomatis mengambil warna yang sesuai menggunakan Theme.of(context). Oleh karena itu, bagian terpenting adalah menghindari pengaturan warna secara manual (hardcoding) pada widget individual. Dengan cara ini, jika brand saya berganti warna, saya hanya perlu mengubah satu seedColor di main.dart untuk memperbarui tampilan seluruh aplikasi secara konsisten.
+
+</details>
