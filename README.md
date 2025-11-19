@@ -4,7 +4,7 @@
 <summary>Tugas 7: Elemen Dasar Flutter</summary>
 
 ### Jelaskan apa itu widget tree pada Flutter dan bagaimana hubungan parent-child (induk-anak) bekerja antar widget.
-Widget Tree pada dasarnya adalah representasi hierarkis dari seluruh widget yang menyusun antarmuka pengguna (UI) sebuah aplikasi Flutter. Struktur ini dapat dianalogikan seperti pohon silsilah, di mana terdapat satu widget akar (biasanya MaterialApp) yang kemudian bercabang menjadi widget-widget lain di bawahnya. Flutter menggunakan pohon ini untuk menentukan bagaimana UI harus dirender atau digambar di layar. Hubungan induk-anak (parent-child) adalah mekanisme fundamental yang mengatur tata letak (layout) dalam struktur ini. Prosesnya bekerja sebagai berikut, induk (parent) bertanggung jawab memberikan batasan (constraints) kepada anaknya, yang menentukan batasan ukuran minimum dan maksimum (misalnya, lebar atau tinggi) yang boleh ditempati oleh anak. Setelah menerima batasan tersebut, anak (child) akan menentukan ukuran(size) spesifik yang dibutuhkannya, selama ukuran tersebut masih berada dalam batasan yang diberikan oleh induknya. Terakhir, setelah anak mengkomunikasikan ukurannya kembali ke induk, induk akan menentukan posisi anak tersebut (misalnya, di tengah, di kiri atas, atau relatif terhadap anak lainnya) di dalam area yang telah dialokasikan untuknya.
+Widget Tree pada dasarnya adalah representasi hierarkis dari seluruh widget yang menyusun antarmuka pengguna (UI) sebuah aplikasi Flutter. Struktur ini dapat dianalogikan seperti pohon silsilah, di mana terdapat satu widget akar (biasanya MaterialApp) yang kemudian bercabang menjadi widget-widget lain di bawahnya. Flutter menggunakan pohon ini untuk menentukan bagaimana UI harus dirender atau digambar di layar. Hubungan induk-anak (parent-child) adalah mekanisme fundamental yang mengatur tata letak (layout) dalam struktur ini. Prosesnya bekerja sebagai berikut, induk (parent) bertanggung jawab omemberikan batasan (constraints) kepada anaknya, yang menentukan batasan ukuran minimum dan maksimum (misalnya, lebar atau tinggi) yang boleh ditempati oleh anak. Setelah menerima batasan tersebut, anak (child) akan menentukan ukuran(size) spesifik yang dibutuhkannya, selama ukuran tersebut masih berada dalam batasan yang diberikan oleh induknya. Terakhir, setelah anak mengkomunikasikan ukurannya kembali ke induk, induk akan menentukan posisi anak tersebut (misalnya, di tengah, di kiri atas, atau relatif terhadap anak lainnya) di dalam area yang telah dialokasikan untuknya.
 
 ### Sebutkan semua widget yang kamu gunakan dalam proyek ini dan jelaskan fungsinya.
 **1. Widget Struktur dan Layout**
@@ -106,4 +106,76 @@ Hierarki Scaffold, AppBar, dan Drawer dimanfaatkan untuk menciptakan konsistensi
 ### Bagaimana kamu menyesuaikan warna tema agar aplikasi Football Shop memiliki identitas visual yang konsisten dengan brand toko?
 Untuk menyesuaikan warna tema agar aplikasi Football Shop memiliki identitas visual yang konsisten, caranya dengan mendefinisikan skema warna secara terpusat di satu lokasi, yaitu di dalam properti theme pada widget MaterialApp di file main.dart. Dengan menggunakan ColorScheme.fromSeed(), saya hanya perlu menentukan satu seedColor yang merepresentasikan warna brand, dan Flutter akan secara otomatis menghasilkan seluruh palet warna (seperti primary, secondary, dan background) yang harmonis. Setelah tema global ini ditetapkan, semua widget di seluruh aplikasi, seperti AppBar dan ElevatedButton, akan secara otomatis mengambil warna yang sesuai menggunakan Theme.of(context). Oleh karena itu, bagian terpenting adalah menghindari pengaturan warna secara manual (hardcoding) pada widget individual. Dengan cara ini, jika brand saya berganti warna, saya hanya perlu mengubah satu seedColor di main.dart untuk memperbarui tampilan seluruh aplikasi secara konsisten.
 
+</details>
+
+<details>
+<summary>Tugas 9: Integrasi Layanan Web Django dengan Aplikasi Flutter</summary>
+
+### Jelaskan mengapa kita perlu membuat model Dart saat mengambil/mengirim data JSON? Apa konsekuensinya jika langsung memetakan Map<String, dynamic> tanpa model (terkait validasi tipe, null-safety, maintainability)?
+Kita perlu membuat model Dart saat mengambil atau mengirim data JSON untuk menjembatani perbedaan antara struktur data JSON yang dinamis (tidak terikat tipe data secara ketat) dengan bahasa Dart yang bersifat strongly-typed (sangat ketat pada tipe data). Model berfungsi sebagai blueprint yang mendefinisikan bagaimana struktur data seharusnya terlihat. Konsekuensi jika langsung memetakan Map<String, dynamic> tanpa model adalah hilangnya type safety, masalah Null-Safety, maintainability yang buruk, dll.
+
+### Apa fungsi package http dan CookieRequest dalam tugas ini? Jelaskan perbedaan peran http vs CookieRequest.
+Package http: Berfungsi sebagai dasar untuk melakukan pertukaran data melalui protokol HTTP (seperti metode GET, POST, PUT, DELETE). Fungsinya murni untuk mengirim permintaan dan menerima respons dari server. Secara default, package ini bersifat stateless, artinya ia tidak menyimpan informasi apa pun (seperti sesi login) antar-permintaan.
+
+CookieRequest (dari pbp_django_auth): Berfungsi sebagai pembungkus (wrapper) di atas protokol HTTP standar yang dirancang khusus untuk menangani manajemen sesi.
+
+Perbedaan Peran: Perbedaan utamanya terletak pada manajemen state (state management). Package http biasa akan melupakan siapa pengguna setelah satu permintaan selesai. Sebaliknya, CookieRequest secara otomatis menyimpan dan menyertakan metadata sesi (cookies/session ID) yang diterima dari Django pada setiap permintaan berikutnya. Ini memungkinkan server mengenali bahwa permintaan kedua, ketiga, dan seterusnya berasal dari pengguna yang sama yang telah melakukan login.
+
+### Jelaskan mengapa instance CookieRequest perlu untuk dibagikan ke semua komponen di aplikasi Flutter.
+Instance CookieRequest perlu dibagikan ke seluruh komponen aplikasi (biasanya menggunakan Provider) untuk menjamin konsistensi sesi pengguna.
+
+Saat pengguna berhasil login, server Django memberikan sebuah session ID yang disimpan di dalam instance CookieRequest tersebut. Jika instance CookieRequest baru dibuat di setiap halaman atau widget, maka instance baru tersebut masih kosong dan tidak memiliki session ID tadi. Akibatnya, server akan menganggap permintaan dari instance baru tersebut berasal dari pengguna anonim (belum login), meskipun pengguna sebenarnya sudah login di halaman sebelumnya.
+
+### Jelaskan konfigurasi konektivitas yang diperlukan agar Flutter dapat berkomunikasi dengan Django. Mengapa kita perlu menambahkan 10.0.2.2 pada ALLOWED_HOSTS, mengaktifkan CORS dan pengaturan SameSite/cookie, dan menambahkan izin akses internet di Android? Apa yang akan terjadi jika konfigurasi tersebut tidak dilakukan dengan benar?
+Konfigurasi konektivitas sangat penitng untuk menjembatani komunikasi antara aplikasi Flutter dan server Django. Hal ini mencakup penambahan 10.0.2.2 pada ALLOWED_HOSTS untuk memungkinkan emulator Android mengakses server di komputer host, serta pemberian izin internet pada AndroidManifest.xml agar aplikasi memiliki otorisasi untuk menggunakan jaringan. Di sisi lain, pengaktifan CORS dan pengaturan SameSite/Cookie diperlukan untuk mengatasi pembatasan keamanan browser (terutama pada platform web) dan memastikan transmisi data serta sesi autentikasi berjalan aman lintas origin. Kelalaian dalam menerapkan konfigurasi ini akan mengakibatkan kegagalan koneksi fatal, seperti munculnya SocketException, Connection Refused, atau penolakan akses oleh server, yang menyebabkan aplikasi tidak dapat mengirim atau menerima data sama sekali.
+
+### Jelaskan mekanisme pengiriman data mulai dari input hingga dapat ditampilkan pada Flutter.
+Input: Pengguna memasukkan data melalui widget formulir (TextFormField) di Flutter.
+
+Validasi & Serialisasi: Tombol simpan ditekan. Flutter memvalidasi input, lalu mengubah data tersebut menjadi format JSON (jsonEncode).
+
+Transmisi (POST): Flutter menggunakan CookieRequest untuk mengirim HTTP POST request yang berisi data JSON tersebut ke URL endpoint Django.
+
+Pemrosesan Server: Django menerima request, memvalidasi data, dan menyimpannya ke dalam basis data (Database). Django mengembalikan respons JSON (misal: {"status": "success"}).
+
+Fetching (GET): Untuk menampilkannya, Flutter melakukan HTTP GET request ke endpoint JSON Django.
+
+Deserialisasi: Data JSON yang diterima diubah kembali menjadi objek Model Dart (menggunakan fromJson).
+
+Tampilan: Objek Model tersebut digunakan oleh widget (seperti ListView atau GridView) untuk menampilkan informasi (nama, harga, deskripsi) ke layar pengguna.
+
+### Jelaskan mekanisme autentikasi dari login, register, hingga logout. Mulai dari input data akun pada Flutter ke Django hingga selesainya proses autentikasi oleh Django dan tampilnya menu pada Flutter.
+**Register**
+
+1. Flutter mengirim data pendaftaran (username, password) via **POST** ke endpoint register Django
+2. Django menggunakan `UserCreationForm` untuk membuat akun baru di database
+3. Jika sukses, Django mengembalikan status sukses
+4. Pengguna diarahkan ke halaman login
+
+**Login**
+
+1. Flutter mengirim kredensial (username, password) via **POST** ke endpoint login Django
+2. Django memverifikasi kredensial menggunakan fungsi `authenticate()`
+3. Jika valid, Django menjalankan fungsi `login()`, yang membuat sesi baru di server dan menghasilkan session ID
+4. Django mengirimkan respons sukses beserta **Session Cookie** di dalam header respons
+5. **Penting**: `CookieRequest` di Flutter menangkap cookie ini dan menyimpannya di memori lokal aplikasi
+
+**Logout**
+
+1. Flutter memanggil fungsi `request.logout()` ke endpoint logout Django
+2. Karena `CookieRequest` menyertakan cookie sesi yang tersimpan, Django tahu siapa yang meminta logout
+3. Django menghapus sesi tersebut dari server
+4. `CookieRequest` di Flutter menghapus cookie yang tersimpan di lokal
+5. Pengguna diarahkan kembali ke halaman login karena sesi sudah tidak valid
+
+### Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step! (bukan hanya sekadar mengikuti tutorial).
+1. Persiapan Backend dan Integrasi Autentikasi Langkah pertama yang saya lakukan adalah memastikan proyek Django telah berjalan dengan baik, baik di localhost maupun di tautan deployment. Saya melakukan konfigurasi krusial di sisi Django, yaitu menambahkan corsheaders pada INSTALLED_APPS dan MIDDLEWARE serta mengatur CORS_ALLOW_ALL_ORIGINS = True (atau mendaftarkan host spesifik) untuk mengizinkan aplikasi Flutter berkomunikasi dengan server. Di sisi Flutter, saya mengintegrasikan sistem autentikasi dengan menginstal paket pbp_django_auth. Saya memodifikasi main.dart untuk membungkus widget root MaterialApp dengan Provider yang menyediakan satu instance CookieRequest tunggal. Hal ini memastikan bahwa state login (cookies dan session ID) dapat persisten dan dibagikan ke seluruh halaman aplikasi.
+
+2. Implementasi Fitur Registrasi dan Login Setelah fondasi autentikasi siap, saya membuat dua layar formulir: Login Page dan Register Page. Pada kedua halaman ini, saya menggunakan widget TextFormField untuk mengambil input pengguna (username dan password). Untuk logika di baliknya, saya memanfaatkan metode request.login() dan request.postJson() dari pustaka pbp_django_auth untuk mengirim kredensial ke endpoint autentikasi Django. Saya menambahkan logika navigasi menggunakan Navigator.pushReplacement agar setelah berhasil login atau registrasi, pengguna langsung diarahkan ke halaman menu utama dan tidak dapat kembali ke halaman login dengan tombol back.
+
+3. Pembuatan Model Kustom (ProductEntry) Sebelum mengambil data produk, saya menganalisis struktur JSON yang dikembalikan oleh endpoint Django. Berdasarkan struktur tersebut, saya membuat model Dart bernama ProductEntry. Saya menerapkan prinsip robustness pada model ini dengan menangani null safety. Saya menggunakan operator null coalescing (??) pada konstruktor fromJson untuk memberikan nilai default (seperti string kosong atau 0) jika ada atribut dari JSON yang bernilai null atau tidak lengkap. Hal ini mencegah aplikasi mengalami crash jika ada inkonsistensi data dari server.
+
+4. Menampilkan Daftar Item dan Filter Pengguna Untuk menampilkan daftar item, saya menerapkan dua strategi berbeda sesuai kebutuhan checklist. Untuk menampilkan semua item, saya mengambil data dari endpoint publik (/json/). Namun, untuk memenuhi poin filter item berdasarkan pengguna yang login, saya membuat halaman khusus "My Products" yang mengambil data dari endpoint khusus di Django (/get-my-products/). Di Django, endpoint ini menggunakan Product.objects.filter(user=request.user) untuk memastikan hanya data milik pengguna tersebut yang dikirim. Di sisi Flutter, saya menggunakan FutureBuilder untuk memanggil fungsi fetching data secara asinkron. Data yang berhasil diambil kemudian ditampilkan menggunakan ListView.builder yang menyusun item secara vertikal (list), serta menggunakan widget kustom ProductEntryCard untuk menampilkan atribut detail seperti name, price, dan thumbnail dengan rapi.
+
+5. Implementasi Halaman Detail Langkah terakhir adalah membuat navigasi ke halaman detail. Saya menambahkan fungsi onTap pada ProductEntryCard yang menggunakan Navigator.push untuk berpindah ke ProductDetailPage. Saat navigasi dilakukan, saya mengirimkan objek ProductEntry lengkap sebagai parameter ke halaman detail tersebut. Di halaman ProductDetailPage, saya menyusun tampilan menggunakan Column dan SingleChildScrollView untuk menampilkan seluruh atribut produk secara lengkap, termasuk deskripsi panjang, kategori, penjual, dan status featured. Saya juga menambahkan tombol "Back" di bagian atas halaman yang memanggil Navigator.pop(context) untuk memudahkan pengguna kembali ke daftar produk sebelumnya.
 </details>
